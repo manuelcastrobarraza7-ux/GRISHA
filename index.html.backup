@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="es" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Espiqumeyria AI - Gemini Science</title>
+    <meta name="description" content="Espiqumeyria AI - Gemini Science: Plataforma de inteligencia científica para Química Orgánica, Química Inorgánica, Astrofísica & Cuántica y Laboratorio." />
+    <meta property="og:title" content="Espiqumeyria AI - Gemini Science" />
+    <meta property="og:description" content="Espiqumeyria AI - Gemini Science: Plataforma de inteligencia científica para Química Orgánica, Química Inorgánica, Astrofísica & Cuántica y Laboratorio." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+  </head>
+  <body class="bg-[#080d14] text-slate-100 antialiased selection:bg-cyan-500 selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

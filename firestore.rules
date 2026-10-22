@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['uid', 'email', 'createdAt']) &&
+             data.keys().hasOnly(['uid', 'email', 'displayName', 'photoURL', 'createdAt']) &&
+             data.uid is string && data.uid == request.auth.uid && data.uid.size() <= 128 &&
+             data.email is string && data.email.size() <= 256 &&
+             (!('displayName' in data) || (data.displayName is string && data.displayName.size() <= 128)) &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 512)) &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    function isValidSavedReaction(data) {
+      return data.keys().hasAll(['id', 'userId', 'equation', 'createdAt']) &&
+             data.keys().hasOnly(['id', 'userId', 'title', 'equation', 'reagents', 'createdAt']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId == request.auth.uid && data.userId.size() <= 128 &&
+             (!('title' in data) || (data.title is string && data.title.size() <= 200)) &&
+             data.equation is string && data.equation.size() <= 500 &&
+             (!('reagents' in data) || (data.reagents is string && data.reagents.size() <= 500)) &&
+             data.createdAt is string && data.createdAt.size() <= 64;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProfile(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserProfile(request.resource.data) &&
+                      request.resource.data.uid == resource.data.uid &&
+                      request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if isOwner(userId);
+
+      match /savedReactions/{reactionId} {
+        allow get: if isOwner(userId);
+        allow list: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidId(reactionId) && isValidSavedReaction(request.resource.data) &&
+                        request.resource.data.userId == userId;
+        allow update: if isOwner(userId) && isValidId(reactionId) && isValidSavedReaction(request.resource.data) &&
+                        request.resource.data.userId == userId &&
+                        request.resource.data.id == resource.data.id &&
+                        request.resource.data.createdAt == resource.data.createdAt;
+        allow delete: if isOwner(userId) && isValidId(reactionId);
+      }
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
